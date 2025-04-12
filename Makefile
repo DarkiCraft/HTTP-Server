@@ -1,8 +1,14 @@
 # === Variables ===
 CXX := g++
-CXXFLAGS := -Wall -Wextra -Wpedantic -std=c++17 -O0 -g -Iinclude \
-            -fsanitize=address -fno-omit-frame-pointer
-LDFLAGS := -fsanitize=address
+CXXFLAGS := -std=c++17 \
+            -Wall -Wextra -Wpedantic \
+            -O0 -g \
+            -fsanitize=address -fsanitize=undefined \
+						-fno-omit-frame-pointer \
+            -Iinclude
+
+LDFLAGS  := -fsanitize=address -fsanitize=undefined 
+
 
 AR := ar
 ARFLAGS := rcs
