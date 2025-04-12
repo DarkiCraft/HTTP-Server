@@ -3,4 +3,4 @@
 
 void foo();
 
-#endif  // TEST_H
+#endif	// TEST_H

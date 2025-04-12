@@ -2,7 +2,7 @@
 !*/.gitignore
 
 .vscode
-build
 
+build
 client
 server
