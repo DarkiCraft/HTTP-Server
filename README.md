@@ -18,20 +18,12 @@ git config --global user.name "<your-github-username>"
 git config --global user.email "<your.email@example.com>"
 ```
 
----
-
-## ✅ Step 2: Clone the Repo
-
 Clone the project from GitHub to your computer:
 
 ```bash
 git clone https://github.com/DarkiCraft/os-project.git
 cd os-project
 ```
-
----
-
-## ✅ Step 3: Create Your Own Branch
 
 Each teammate should make their own branch to work independently:
 
@@ -49,7 +41,18 @@ This lets everyone work without breaking each other’s code.
 
 ---
 
-## ✅ Step 4: Work on Your Code
+## ✅ Step 2: Update to the Latest Commit
+
+Before making any changes to your code, make sure you are synced to main
+
+```bash
+git checkout "<your-module-name>"
+git pull origin main
+```
+
+---
+
+## ✅ Step 3: Work on Your Code
 
 Make changes in your code (in VS Code preferably). Then save and commit your work:
 
@@ -57,11 +60,8 @@ Make changes in your code (in VS Code preferably). Then save and commit your wor
 git add .
 git commit -m "<comment changes>"
 ```
-The comment is necessary. Try to make it descriptive to what changes you implemented
-
----
-
-## ✅ Step 5: Push Your Branch to GitHub
+The comment is necessary. Try to make it descriptive to what changes you implemented.
+Finally, push your changes to your branch:
 
 ```bash
 git push origin "<your-branch-name>"
@@ -69,9 +69,9 @@ git push origin "<your-branch-name>"
 
 ---
 
-## ✅ Step 6: Let Me Know!
+## ✅ Step 4: There is No Step 4!
 
-Once you’ve pushed your branch, I’ll review it and merge it into the main branch.
+Your work is done. I’ll review your changes and merge it into the main branch.
 
 ---
 
@@ -82,12 +82,14 @@ Once you’ve pushed your branch, I’ll review it and merge it into the main br
 git config --global user.name "<your-github-username>"
 git config --global user.email "<your.email@example.com>"
 
-# Clone the repo
 git clone https://github.com/DarkiCraft/os-project.git
 cd os-project
 
-# Create a branch and switch to it
 git checkout -b "<your-module-name>"
+
+# Before working on code changes, make sure you are on the latest commit
+git checkout "<your-module-name>"
+git pull origin main
 
 # Save and upload your changes
 git add .
