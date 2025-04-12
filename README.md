@@ -9,7 +9,10 @@ Hello Pookies! This guide will help you get started with Git and GitHub for our 
 This only needs to be done ONCE.
 
 If you haven’t already, install Git:  
-🔗 https://git-scm.com/downloads
+```bash
+sudo apt update
+sudo apt install git
+```
 
 After installing, open your terminal and set your identity:
 
