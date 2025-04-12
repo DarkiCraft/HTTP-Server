@@ -49,7 +49,7 @@ This lets everyone work without breaking each other’s code.
 Before making any changes to your code, make sure you are synced to main
 
 ```bash
-git checkout "<your-module-name>"
+git checkout "<your-branch-name>"
 git pull origin main
 ```
 
@@ -88,10 +88,10 @@ git config --global user.email "<your.email@example.com>"
 git clone https://github.com/DarkiCraft/os-project.git
 cd os-project
 
-git checkout -b "<your-module-name>"
+git checkout -b "<your-branch-name>"
 
 # Before working on code changes, make sure you are on the latest commit
-git checkout "<your-module-name>"
+git checkout "<your-branch-name>"
 git pull origin main
 
 # Save and upload your changes
