@@ -3,6 +3,6 @@
 #include "test.h"
 
 int main() {
-	std::cout << "Server code running...\n";
+	std::cout << "Server code running.....\n";
 	foo();
 }
