@@ -1,4 +1,4 @@
-# === Variables ===
+# === Variables === #
 CXX := g++
 CXXFLAGS := -std=c++17 \
             -Wall -Wextra -Wpedantic \
@@ -8,7 +8,6 @@ CXXFLAGS := -std=c++17 \
             -Iinclude
 
 LDFLAGS  := -fsanitize=address -fsanitize=undefined 
-
 
 AR := ar
 ARFLAGS := rcs
@@ -24,20 +23,19 @@ SERVER_OBJ := $(BUILD_DIR)/server.o
 
 TARGETS := server client
 
-# === Targets ===
+# === Targets === #
 all: $(TARGETS)
+
+client: $(CLIENT_OBJ) $(LIB)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+
+server: $(SERVER_OBJ) $(LIB)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 $(LIB): $(OBJ)
 	@mkdir -p $(BUILD_DIR)
 	$(AR) $(ARFLAGS) $@ $^
 
-server: $(SERVER_OBJ) $(LIB)
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
-
-client: $(CLIENT_OBJ) $(LIB)
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
-
-# Compile individual .cpp files
 $(BUILD_DIR)/%.o: src/%.cpp
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -50,8 +48,8 @@ $(BUILD_DIR)/client.o: client.cpp
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean
 clean:
 	rm -rf $(BUILD_DIR) $(TARGETS)
 
 .PHONY: all clean
+# === End of Makefile === #
