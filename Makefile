@@ -1,10 +1,10 @@
 # === Variables === #
-CXX := g++
-CXXFLAGS := -std=c++17 \
+CXX := gcc
+CXXFLAGS := -std=c23 \
             -Wall -Wextra -Wpedantic \
             -O0 -g \
             -fsanitize=address -fsanitize=undefined \
-						-fno-omit-frame-pointer \
+            -fno-omit-frame-pointer \
             -Iinclude
 
 LDFLAGS  := -fsanitize=address -fsanitize=undefined 
@@ -15,8 +15,11 @@ ARFLAGS := rcs
 BUILD_DIR := build
 LIB := $(BUILD_DIR)/libcommon.a
 
-SRC := $(wildcard src/*.cpp)
-OBJ := $(patsubst src/%.cpp, $(BUILD_DIR)/%.o, $(SRC))
+SRC := $(wildcard src/*.c)
+OBJ := $(patsubst src/%.c, $(BUILD_DIR)/%.o, $(SRC))
+
+CLIENT_SRC := src/client.c
+SERVER_SRC := src/server.c
 
 CLIENT_OBJ := $(BUILD_DIR)/client.o
 SERVER_OBJ := $(BUILD_DIR)/server.o
@@ -36,15 +39,15 @@ $(LIB): $(OBJ)
 	@mkdir -p $(BUILD_DIR)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(BUILD_DIR)/%.o: src/%.cpp
+$(BUILD_DIR)/%.o: src/%.c
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/server.o: server.cpp
+$(CLIENT_OBJ): $(CLIENT_SRC)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/client.o: client.cpp
+$(SERVER_OBJ): $(SERVER_SRC)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
