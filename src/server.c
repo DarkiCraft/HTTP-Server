@@ -1,85 +1,102 @@
+#include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
-#define PORT 8080
-#define MAX_PENDING 5
+#include "common.h"
+#include "network.h"
+#include "queue.h"
+#include "thread_pool.h"
 
-void handle_client(int client_socket)
-{
-	char buffer[1024];
-	int read_size;
+const size_t PORT = 8080;
+const size_t MAX_PENDING_CONNECTIONS = 10;
+const size_t BUFFER_SIZE = 1024;
 
-	// Read the HTTP request
-	read_size = read(client_socket, buffer, sizeof(buffer) - 1);
-	if (read_size < 0)
-	{
-		perror("Error reading from socket");
+static Queue queue;
+static ThreadPool thread_pool;
+
+static void HandleClient(int client_socket) {
+	char buffer[BUFFER_SIZE];
+	int read_size = 0;
+
+	read_size = (int)read(client_socket, buffer, sizeof(buffer) - 1);
+	if (read_size < 0) {
+		perror("Error: In HandleClient(): read() failed");
 		close(client_socket);
 		return;
 	}
 
-	buffer[read_size] = '\0'; // Null-terminate the buffer
+	buffer[read_size] = '\0';
 
-	// Print the HTTP request (optional for debugging)
-	printf("Received request:\n%s\n", buffer);
+	HTTPRequest* request = ParseHTTPRequest(buffer);
 
-	// Create a simple HTTP response
-	char *response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello, world!";
+	if (request == NULL) {
+		perror("Error: In HandleClient(): ParseHTTPRequest() failed");
+		return;
+	}
 
-	// Send the HTTP response
+	printf(
+			"Received request:\n"
+			"Method: %s\n"
+			"Path: %s\n"
+			"Body:\n%s\n",
+			request->method,
+			request->path,
+			request->body ? request->body : "No body\n");
+
+	FreeHTTPRequest(request);
+
+	(void)fflush(stdout);
+
+	char* response =
+			"HTTP/1.1 200 OK\r\n"						// HTTP response status line
+			"Content-Type: text/plain\r\n"	// HTTP response header
+			"\r\n"													// End of headers
+			"Hello, world!\r\n";						// HTTP response body
+
 	write(client_socket, response, strlen(response));
-
-	// Close the connection
-	close(client_socket);
 }
 
-int main()
-{
-	int server_socket, client_socket;
-	struct sockaddr_in server_addr, client_addr;
-	socklen_t client_addr_len = sizeof(client_addr);
+void InitServer() {
+	server_socket = CreateServerSocket((int)PORT, (int)MAX_PENDING_CONNECTIONS);
 
-	server_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (server_socket < 0)
-	{
-		perror("Error creating socket");
+	if (server_socket < 0) {
+		perror("Error: In InitServer(): CreateServerSocket() failed");
 		exit(EXIT_FAILURE);
 	}
 
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = INADDR_ANY;
-	server_addr.sin_port = htons(PORT);
+	InitQueue(&queue, (int)MAX_PENDING_CONNECTIONS);
+	InitThreadPool(&thread_pool, (int)MAX_PENDING_CONNECTIONS, &queue);
+}
 
-	if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
-	{
-		perror("Error binding socket");
-		close(server_socket);
-		exit(EXIT_FAILURE);
-	}
-
-	if (listen(server_socket, MAX_PENDING) < 0)
-	{
-		perror("Error listening on socket");
-		close(server_socket);
-		exit(EXIT_FAILURE);
-	}
-
-	printf("Server is listening on port %d...\n", PORT);
-
-	while (1)
-	{
-		client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_addr_len);
-		if (client_socket < 0)
-		{
-			perror("Error accepting connection");
+void RunServer() {
+	while (is_server_running) {
+		int client_socket = AcceptClient(server_socket);
+		if (client_socket < 0) {
+			perror("Error: In RunServer(): AcceptClient() failed");
 			continue;
 		}
-		handle_client(client_socket);
-	}
 
-	close(server_socket);
+		Enqueue(&queue, client_socket);
+
+		// will add worker part later
+		int socket_to_handle = Dequeue(&queue);
+		if (socket_to_handle >= 0) {
+			HandleClient(socket_to_handle);
+			close(socket_to_handle);
+		}
+	}
+}
+
+void ShutdownServer() {
+	CloseServerSocket(server_socket);
+	CleanupQueue(&queue);
+	CleanupThreadPool(&thread_pool);
+}
+
+int main() {
+	InitServer();
+	RunServer();
+	ShutdownServer();
 }

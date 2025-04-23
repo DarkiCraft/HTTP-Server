@@ -5,9 +5,10 @@ CXXFLAGS := -std=c23 \
             -O0 -g \
             -fsanitize=address -fsanitize=undefined \
             -fno-omit-frame-pointer \
-            -Iinclude
+            -Iinclude \
+						-pthread
 
-LDFLAGS  := -fsanitize=address -fsanitize=undefined 
+LDFLAGS  := -fsanitize=address -fsanitize=undefined -pthread
 
 AR := ar
 ARFLAGS := rcs
