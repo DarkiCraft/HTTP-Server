@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+const size_t PORT = 8080;
+const size_t MAX_PENDING_CONNECTIONS = 10;
+const size_t BUFFER_SIZE = 1024;
+
+volatile sig_atomic_t is_server_running = 0;
+
 size_t my_strnlen(const char* s, size_t maxlen) {
 	if (s == NULL) {
 		return 0;
@@ -84,8 +90,5 @@ char* my_strndup(const char* s, size_t n) {
 	new_str[len] = '\0';
 	return new_str;
 }
-
-int server_socket = -1;
-int is_server_running = 1;
 
 // src/common.c

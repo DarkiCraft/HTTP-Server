@@ -93,3 +93,5 @@ void FreeHTTPRequest(HTTPRequest* request) {
 	free(request->body);
 	free(request);
 }
+
+// src/parser.c

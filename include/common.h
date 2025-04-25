@@ -1,7 +1,49 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <signal.h>
 #include <stddef.h>
+
+/**
+ * @brief The port number on which the server listens for incoming connections.
+ *
+ * This constant defines the network port used by the server to accept
+ * client connections. It should be set to a valid, unused port number.
+ *
+ * @note Must be initialized in the implementation file before use.
+ */
+extern const size_t PORT;
+
+/**
+ * @brief The maximum number of pending client connections in the server queue.
+ *
+ * This constant specifies the limit for how many client connection requests
+ * can be queued while waiting to be accepted. Beyond this limit, additional
+ * connection attempts may be refused by the operating system.
+ *
+ * @note Must be initialized in the implementation file before use.
+ */
+extern const size_t MAX_PENDING_CONNECTIONS;
+
+/**
+ * @brief The size of the buffer used for reading data from client sockets.
+ *
+ * This constant determines the number of bytes allocated for input/output
+ * operations involving client communication. It affects memory usage and
+ * performance depending on workload.
+ *
+ * @note Must be initialized in the implementation file before use.
+ */
+extern const size_t BUFFER_SIZE;
+
+/**
+ * @brief Flag indicating whether the server should continue running.
+ *
+ * This variable is modified by the signal handler when a termination signal is
+ * received. It should be checked periodically in long-running loops to
+ * determine if shutdown is requested.
+ */
+extern volatile sig_atomic_t is_server_running;
 
 /**
  * @brief Sets a block of memory to a specified value.
@@ -65,8 +107,9 @@ void* my_memcpy(void* dest, const void* src, size_t n);
  */
 char* my_strndup(const char* s, size_t n);
 
-extern int server_socket;
-extern int is_server_running;
+// extern const size_t PORT;
+// extern const size_t MAX_PENDING_CONNECTIONS;
+// extern const size_t BUFFER_SIZE;
 
 #endif	// COMMON_H
 

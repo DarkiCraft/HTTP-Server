@@ -2,15 +2,64 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "common.h"
+#include "parser.h"
+#include "signal_handler.h"
+
+static void HandleClient(int client_socket) {
+	char buffer[BUFFER_SIZE];
+	int read_size = 0;
+
+	read_size = (int)read(client_socket, buffer, sizeof(buffer) - 1);
+	if (read_size < 0) {
+		(void)fprintf(stderr, "Error: In HandleClient(): read() failed\n");
+		return;
+	}
+
+	buffer[read_size] = '\0';
+
+	HTTPRequest* request = ParseHTTPRequest(buffer);
+
+	if (request == NULL) {
+		(void)fprintf(stderr,
+									"Error: In HandleClient(): ParseHTTPRequest() failed\n");
+		return;
+	}
+
+	printf(
+			"Received request:\n"
+			"Method: %s\n"
+			"Path: %s\n"
+			"Body:\n%s\n",
+			request->method,
+			request->path,
+			request->body ? request->body : "No body\n");
+
+	FreeHTTPRequest(request);
+
+	(void)fflush(stderr);
+
+	char* response =
+			"HTTP/1.1 200 OK\r\n"						// HTTP response status line
+			"Content-Type: text/plain\r\n"	// HTTP response header
+			"\r\n"													// End of headers
+			"Hello, world!\r\n";						// HTTP response body
+
+	write(client_socket, response, strlen(response));
+}
 
 void InitThreadPool(ThreadPool* pool, int num_thread, Queue* queue) {
 	if (num_thread <= 0) {
-		(void)fprintf(stderr, "Error: In InitThreadPool(): num_thread must be > 0");
+		(void)fprintf(stderr,
+									"Error: In InitThreadPool(): num_thread must be > 0\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (queue == NULL) {
-		(void)fprintf(stderr, "Error: In InitThreadPool(): queue is NULL");
+		(void)fprintf(stderr, "Error: In InitThreadPool(): queue is NULL\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -32,7 +81,9 @@ void InitThreadPool(ThreadPool* pool, int num_thread, Queue* queue) {
 	if (pthread_cond_init(&pool->cond, NULL) != 0) {
 		perror("Error: In InitThreadPool(): pthread_cond_init() failed");
 		free(pool->threads);
-		(void)pthread_mutex_destroy(&pool->lock);
+		if (pthread_mutex_destroy(&pool->lock) != 0) {
+			perror("Error: In InitThreadPool(): pthread_mutex_destroy() failed");
+		}
 		exit(EXIT_FAILURE);
 	}
 
@@ -42,12 +93,20 @@ void InitThreadPool(ThreadPool* pool, int num_thread, Queue* queue) {
 			perror("Error: In InitThreadPool(): pthread_create() failed");
 
 			for (int j = 0; j < i; j++) {
-				pthread_cancel(pool->threads[j]);
+				if (pthread_cancel(pool->threads[j]) != 0) {
+					perror("Error: In InitThreadPool(): pthread_cancel() failed");
+				}
 			}
 
 			free(pool->threads);
-			(void)pthread_mutex_destroy(&pool->lock);
-			(void)pthread_cond_destroy(&pool->cond);
+
+			if (pthread_mutex_destroy(&pool->lock) != 0) {
+				perror("Error: In InitThreadPool(): pthread_mutex_destroy() failed");
+			}
+
+			if (pthread_cond_destroy(&pool->cond) != 0) {
+				perror("Error: In InitThreadPool(): pthread_cond_destroy() failed");
+			}
 
 			exit(EXIT_FAILURE);
 		}
@@ -55,7 +114,25 @@ void InitThreadPool(ThreadPool* pool, int num_thread, Queue* queue) {
 }
 
 void* WorkerThread(void* arg) {
-	while (1);
+	sigset_t set;
+	sigemptyset(&set);
+	sigaddset(&set, SIGINT);
+	sigaddset(&set, SIGTERM);
+	pthread_sigmask(SIG_BLOCK, &set, NULL);
+
+	while (is_server_running) {
+		int client_socket = Dequeue(((ThreadPool*)arg)->queue);
+		if (client_socket < 0) {
+			continue;
+		}
+
+		HandleClient(client_socket);
+
+		if (close(client_socket) < 0) {
+			perror("Error: In WorkerThread(): close() failed");
+		}
+	}
+
 	return NULL;
 }
 
@@ -65,12 +142,21 @@ void CleanupThreadPool(ThreadPool* pool) {
 	}
 
 	for (int i = 0; i < pool->num_threads; i++) {
-		pthread_cancel(pool->threads[i]);
+		if (pthread_join(pool->threads[i], NULL) != 0) {
+			perror("Error: In CleanupThreadPool(): pthread_join() failed");
+		}
 	}
 
 	free(pool->threads);
 	pool->threads = NULL;
 
-	(void)pthread_mutex_destroy(&pool->lock);
-	(void)pthread_cond_destroy(&pool->cond);
+	if (pthread_mutex_destroy(&pool->lock) != 0) {
+		perror("Error: In CleanupThreadPool(): pthread_mutex_destroy() failed");
+	}
+
+	if (pthread_cond_destroy(&pool->cond) != 0) {
+		perror("Error: In CleanupThreadPool(): pthread_cond_destroy() failed");
+	}
 }
+
+// src/thread_pool.c
