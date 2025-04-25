@@ -6,9 +6,8 @@ CXXFLAGS := -std=c23 \
             -fsanitize=address -fsanitize=undefined \
             -fno-omit-frame-pointer \
             -Iinclude \
-						-pthread
 
-LDFLAGS  := -fsanitize=address -fsanitize=undefined -pthread
+LDFLAGS  := -fsanitize=address -fsanitize=undefined -pthread -lsqlite3
 
 AR := ar
 ARFLAGS := rcs

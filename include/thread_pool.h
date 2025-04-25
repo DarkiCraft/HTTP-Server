@@ -1,5 +1,5 @@
-#ifndef THREADPOOL_H
-#define THREADPOOL_H
+#ifndef THREAD_POOL_H
+#define THREAD_POOL_H
 
 #include <pthread.h>
 
@@ -58,4 +58,4 @@ void* WorkerThread(void* arg);
  */
 void CleanupThreadPool(ThreadPool* pool);
 
-#endif	// THREADPOOL_H
+#endif	// THREAD_POOL_H

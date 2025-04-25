@@ -107,10 +107,6 @@ void* my_memcpy(void* dest, const void* src, size_t n);
  */
 char* my_strndup(const char* s, size_t n);
 
-// extern const size_t PORT;
-// extern const size_t MAX_PENDING_CONNECTIONS;
-// extern const size_t BUFFER_SIZE;
-
 #endif	// COMMON_H
 
 // include/common.h

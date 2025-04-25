@@ -74,3 +74,5 @@ HTTPResponse* CreateHTTPResponse(int status_code,
 void FreeHTTPResponse(HTTPResponse* response);
 
 #endif	// PARSER_H
+
+// include/parser.h

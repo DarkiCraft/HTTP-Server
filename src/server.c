@@ -1,14 +1,14 @@
-#include <arpa/inet.h>
-#include <signal.h>
+#include "server.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "common.h"
+#include "database.h"
 #include "network.h"
 #include "queue.h"
 #include "signal_handler.h"
+#include "terminal.h"
 #include "thread_pool.h"
 
 static Queue queue;
@@ -16,6 +16,7 @@ static ThreadPool thread_pool;
 static int server_socket;
 
 void InitServer() {
+	InitTerminalControlChars();
 	InitSignalHandlers(&queue);
 
 	server_socket = CreateServerSocket((int)PORT, (int)MAX_PENDING_CONNECTIONS);
@@ -26,6 +27,7 @@ void InitServer() {
 		exit(EXIT_FAILURE);
 	}
 
+	InitDatabase();
 	InitQueue(&queue, (int)MAX_PENDING_CONNECTIONS);
 	InitThreadPool(&thread_pool, (int)MAX_PENDING_CONNECTIONS, &queue);
 }
@@ -51,8 +53,10 @@ void RunServer() {
 void ShutdownServer() {
 	CleanupThreadPool(&thread_pool);
 	CleanupQueue(&queue);
+	CleanupDatabase();
 	CloseServerSocket(server_socket);
 	CleanupSignalHandlers();
+	CleanupTerminalControlChars();
 
 	(void)putchar('\n');
 }

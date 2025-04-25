@@ -6,35 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "signal_handler.h"
-
-// int CreateServerSocket(int port, int max_connections) {
-// 	int server_socket = socket(AF_INET, SOCK_STREAM, 0);
-
-// 	if (server_socket < 0) {
-// 		(void)fprintf(stderr, "Error: In CreateServerSocket(): socket()
-// failed\n"); 		return -1;
-// 	}
-
-// 	struct sockaddr_in server_addr;
-// 	server_addr.sin_family = AF_INET;
-// 	server_addr.sin_addr.s_addr = INADDR_ANY;
-// 	server_addr.sin_port = htons(port);
-
-// 	if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr))
-// < 			0) { 		perror("Error: In CreateServerSocket(): bind() failed");
-// 		close(server_socket);
-// 		return -1;
-// 	}
-
-// 	if (listen(server_socket, max_connections) < 0) {
-// 		perror("Error: In CreateServerSocket(): listen() failed");
-// 		close(server_socket);
-// 		return -1;
-// 	}
-
-// 	return server_socket;
-// }
+#include "common.h"
 
 int CreateServerSocket(int port, int max_connections) {
 	int server_socket = socket(AF_INET, SOCK_STREAM, 0);

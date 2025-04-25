@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// #include "signal_handler.h"
 #include "common.h"
 
 void InitQueue(Queue* queue, int size) {
@@ -127,48 +126,6 @@ int Dequeue(Queue* queue) {
 	pthread_mutex_unlock(&queue->lock);
 	return client_socket;
 }
-
-// int Dequeue(Queue* queue) {
-// 	if (queue == NULL) {
-// 		(void)fprintf(stderr, "Error: In Dequeue(): queue is NULL\n");
-// 		return -1;
-// 	}
-
-// 	if (pthread_mutex_lock(&queue->lock) != 0) {
-// 		perror("Error: In Dequeue(): pthread_mutex_lock() failed");
-// 		return -1;
-// 	}
-
-// 	while (queue->count == 0 && is_server_running) {
-// 		if (pthread_cond_wait(&queue->cond, &queue->lock) != 0) {
-// 			if (is_server_running) {
-// 				perror("Error: In Dequeue(): pthread_cond_wait() failed");
-// 			}
-
-// 			if (pthread_mutex_unlock(&queue->lock) != 0) {
-// 				perror("Error: In Dequeue(): pthread_mutex_unlock() failed");
-// 			}
-// 			return -1;
-// 		}
-// 	}
-
-// 	if (!is_server_running) {
-// 		if (pthread_mutex_unlock(&queue->lock) != 0) {
-// 			perror("Error: In Dequeue(): pthread_mutex_unlock() failed");
-// 		}
-// 		return -1;
-// 	}
-
-// 	int client_socket = queue->queue[queue->front];
-// 	queue->front = (queue->front + 1) % queue->size;
-// 	queue->count--;
-
-// 	if (pthread_mutex_unlock(&queue->lock) != 0) {
-// 		perror("Error: In Dequeue(): pthread_mutex_unlock() failed");
-// 	}
-
-// 	return client_socket;
-// }
 
 void CleanupQueue(Queue* queue) {
 	if (queue == NULL) {
