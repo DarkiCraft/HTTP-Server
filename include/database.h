@@ -41,19 +41,6 @@ char* DatabaseGet(const char* key);
 int DatabasePost(const char* key, const char* value);
 
 /**
- * @brief Puts a key-value pair into database.
- *
- * This function is a convenience wrapper around DatabasePost. It is provided
- * for compatibility with other systems that may use a different naming
- * convention.
- *
- * @param key The key to set.
- * @param value The value to associate with the key.
- * @return 1 if successful, 0 otherwise.
- */
-int DatabasePut(const char* key, const char* value);
-
-/**
  * @brief Deletes a key-value pair from database.
  *
  * If the key does not exist, this operation is ignored.

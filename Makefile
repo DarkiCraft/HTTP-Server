@@ -8,7 +8,7 @@ CXXFLAGS := -std=gnu23 \
             -Iinclude \
 						-D_GNU_SOURCE
 
-LDFLAGS  := -fsanitize=address -fsanitize=undefined -pthread -lsqlite3
+LDFLAGS  := -pthread -lsqlite3
 
 AR := ar
 ARFLAGS := rcs

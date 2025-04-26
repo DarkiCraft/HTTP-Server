@@ -1,8 +1,6 @@
 !.gitignore
 !*/.gitignore
 
-.vscode
-
 build
 client
 server

@@ -1,12 +1,42 @@
 #include "network.h"
 
 #include <arpa/inet.h>
+#include <ifaddrs.h>
 #include <netinet/in.h>
+#include <netinet/ip.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "common.h"
+
+static void PrintLocalIP() {
+	struct ifaddrs *ifaddr = NULL;
+	struct ifaddrs *ifa = NULL;
+	char ip_str[INET_ADDRSTRLEN];
+
+	if (getifaddrs(&ifaddr) == -1) {
+		perror("Error: getifaddrs() failed");
+		return;
+	}
+
+	for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+		if (ifa->ifa_addr->sa_family == AF_INET) {
+			void *addr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+			inet_ntop(AF_INET, addr, ip_str, INET_ADDRSTRLEN);
+
+			if (ifa->ifa_name[0] != 'l') {
+				printf("Server listening on: http://%s:%zu\n", ip_str, PORT);
+				break;
+			}
+		}
+	}
+
+	freeifaddrs(ifaddr);
+}
 
 int CreateServerSocket(int port, int max_connections) {
 	int server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -29,12 +59,15 @@ int CreateServerSocket(int port, int max_connections) {
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(port);
 
-	if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) <
-			0) {
+	if (bind(server_socket,
+					 (struct sockaddr *)&server_addr,
+					 sizeof(server_addr)) < 0) {
 		perror("Error: In CreateServerSocket(): bind() failed");
 		close(server_socket);
 		return -1;
 	}
+
+	PrintLocalIP();
 
 	if (listen(server_socket, max_connections) < 0) {
 		perror("Error: In CreateServerSocket(): listen() failed");

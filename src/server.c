@@ -58,6 +58,8 @@ void ShutdownServer() {
 	CleanupSignalHandlers();
 	CleanupTerminalControlChars();
 
+	printf("Server shutting down...\n");
+
 	(void)putchar('\n');
 }
 

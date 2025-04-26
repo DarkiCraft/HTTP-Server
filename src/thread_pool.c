@@ -11,48 +11,6 @@
 #include "signal_handler.h"
 #include "transaction_handler.h"
 
-static void HandleClient(int client_socket) {
-	char buffer[BUFFER_SIZE];
-	int read_size = 0;
-
-	read_size = (int)read(client_socket, buffer, sizeof(buffer) - 1);
-	if (read_size < 0) {
-		(void)fprintf(stderr, "Error: In HandleClient(): read() failed\n");
-		return;
-	}
-
-	buffer[read_size] = '\0';
-
-	HTTPRequest* request = ParseHTTPRequest(buffer);
-
-	if (request == NULL) {
-		(void)fprintf(stderr,
-									"Error: In HandleClient(): ParseHTTPRequest() failed\n");
-		return;
-	}
-
-	printf(
-			"Received request:\n"
-			"Method: %s\n"
-			"Path: %s\n"
-			"Body:\n%s\n",
-			request->method,
-			request->path,
-			request->body ? request->body : "No body\n");
-
-	FreeHTTPRequest(request);
-
-	(void)fflush(stderr);
-
-	char* response =
-			"HTTP/1.1 200 OK\r\n"						// HTTP response status line
-			"Content-Type: text/plain\r\n"	// HTTP response header
-			"\r\n"													// End of headers
-			"Hello, world!\r\n";						// HTTP response body
-
-	write(client_socket, response, strlen(response));
-}
-
 void InitThreadPool(ThreadPool* pool, int num_thread, Queue* queue) {
 	if (num_thread <= 0) {
 		(void)fprintf(stderr,

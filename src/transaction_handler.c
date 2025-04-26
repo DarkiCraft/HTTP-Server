@@ -215,10 +215,6 @@ static HTTPResponse* HandlePOST(HTTPRequest* request) {
 	return CreateHTTPResponse((int)HTTP_OK, header, body);
 }
 
-static HTTPResponse* HandlePUT(HTTPRequest* request) {
-	return HandlePOST(request);
-}
-
 static HTTPResponse* HandleDELETE(HTTPRequest* request) {
 	char* question_mark = strchr(request->path, '?');
 	if (question_mark == NULL) {
@@ -276,7 +272,7 @@ static HTTPResponse* HandleDELETE(HTTPRequest* request) {
 	return CreateHTTPResponse((int)HTTP_OK, header, body);
 }
 
-typedef enum { GET, POST, PUT, DELETE, INVALID } HTTPMethod;
+typedef enum { GET, POST, DELETE, INVALID } HTTPMethod;
 
 static HTTPMethod GetHTTPMethod(const char* method) {
 	if (strcmp(method, "GET") == 0) {
@@ -324,9 +320,6 @@ void HandleTransaction(int client_socket) {
 			break;
 		case POST:
 			response = HandlePOST(request);
-			break;
-		case PUT:
-			response = HandlePUT(request);
 			break;
 		case DELETE:
 			response = HandleDELETE(request);

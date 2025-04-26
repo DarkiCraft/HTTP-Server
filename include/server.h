@@ -2,8 +2,7 @@
 #define SERVER_H
 
 /**
- * @brief Initializes all server subsystems (storage, client queue, thread
- * pool).
+ * @brief Initializes all server subsystems
  */
 void InitServer();
 

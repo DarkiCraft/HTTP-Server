@@ -137,10 +137,6 @@ int DatabasePost(const char* key, const char* value) {
 	return 1;
 }
 
-int DatabasePut(const char* key, const char* value) {
-	return DatabasePost(key, value);
-}
-
 int DatabaseDelete(const char* key) {
 	const char* sql = "DELETE FROM database WHERE roll_num = ?;";
 	sqlite3_stmt* stmt = NULL;

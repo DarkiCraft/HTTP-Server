@@ -14,6 +14,8 @@ void InitTerminalControlChars() {
 	} else {
 		perror("Error: In DisableConstrolCharEcho(): tcgetattr() failed");
 	}
+
+	(void)freopen("/dev/null", "w", stderr);
 }
 
 void CleanupTerminalControlChars() {
