@@ -14,8 +14,8 @@
 #include "common.h"
 
 static void PrintLocalIP() {
-	struct ifaddrs *ifaddr = NULL;
-	struct ifaddrs *ifa = NULL;
+	struct ifaddrs* ifaddr = NULL;
+	struct ifaddrs* ifa = NULL;
 	char ip_str[INET_ADDRSTRLEN];
 
 	if (getifaddrs(&ifaddr) == -1) {
@@ -25,7 +25,7 @@ static void PrintLocalIP() {
 
 	for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
 		if (ifa->ifa_addr->sa_family == AF_INET) {
-			void *addr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+			void* addr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
 			inet_ntop(AF_INET, addr, ip_str, INET_ADDRSTRLEN);
 
 			if (ifa->ifa_name[0] != 'l') {
@@ -59,9 +59,8 @@ int CreateServerSocket(int port, int max_connections) {
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(port);
 
-	if (bind(server_socket,
-					 (struct sockaddr *)&server_addr,
-					 sizeof(server_addr)) < 0) {
+	if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) <
+			0) {
 		perror("Error: In CreateServerSocket(): bind() failed");
 		close(server_socket);
 		return -1;

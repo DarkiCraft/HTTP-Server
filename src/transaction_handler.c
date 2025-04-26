@@ -254,7 +254,7 @@ static HTTPResponse* HandleDELETE(HTTPRequest* request) {
 							 sizeof(body),
 							 "{\r\n"
 							 "\t\"status\": \"success\",\r\n"
-							 "\t\"message\": \"roll_num deleted successfully\"\r\n"
+							 "\t\"message\": \"roll_num deleted successfully.\"\r\n"
 							 "}\r\n") < 0) {
 		(void)fprintf(stderr, "Error: In HandleDELETE(): snprintf() failed\n");
 	}

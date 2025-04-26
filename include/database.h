@@ -8,8 +8,8 @@
  * This structure may be extended to store more complex data.
  */
 typedef struct {
-	char* key;		// Key for the data (e.g., "username") */
-	char* value;	// Value associated with the key */
+	char* key;		// Key for the data (e.g., "username")
+	char* value;	// Value associated with the key
 } Record;
 
 /**

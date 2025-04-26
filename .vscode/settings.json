@@ -41,7 +41,9 @@
 		"modernize-deprecated-headers",
 		"readability-identifier-length",
 		"modernize-use-using",
-		"clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling"
+		"clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling",
+		"cppcoreguidelines-avoid-non-const-global-variables",
+		"readability-identifier-length"
 	],
 	"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
 	"C_Cpp.default.cStandard": "gnu23",

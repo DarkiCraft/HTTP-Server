@@ -15,7 +15,7 @@
  */
 typedef struct {
 	pthread_t* threads;	 // Array of thread IDs representing the thread pool
-	int num_threads;		 // Number of threads in the pool */
+	int num_threads;		 // Number of threads in the pool
 	Queue* queue;	 // Pointer to the client queue, which holds client sockets
 	pthread_mutex_t lock;	 // Mutex to synchronize access to shared resources
 	pthread_cond_t
