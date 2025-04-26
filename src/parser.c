@@ -94,4 +94,54 @@ void FreeHTTPRequest(HTTPRequest* request) {
 	free(request);
 }
 
+HTTPResponse* CreateHTTPResponse(int status_code,
+																 const char* headers,
+																 const char* body) {
+	HTTPResponse* response = (HTTPResponse*)malloc(sizeof(HTTPResponse));
+	if (response == NULL) {
+		perror("Error: In CreateHTTPResponse(): malloc() failed");
+		return NULL;
+	}
+
+	response->status_code = status_code;
+
+	if (headers != NULL) {
+		response->headers = my_strdup(headers);
+		if (response->headers == NULL) {
+			perror("Error: In CreateHTTPResponse(): my_strdup() failed");
+			free(response);
+			return NULL;
+		}
+	} else {
+		response->headers = NULL;
+	}
+
+	if (body != NULL) {
+		response->body = my_strdup(body);
+		if (response->body == NULL) {
+			perror("Error: In CreateHTTPResponse(): my_strdup() failed");
+			free(response->headers);
+			free(response);
+			return NULL;
+		}
+	} else {
+		response->body = NULL;
+	}
+
+	return response;
+}
+
+void FreeHTTPResponse(HTTPResponse* response) {
+	if (response != NULL) {
+		if (response->headers != NULL) {
+			free(response->headers);
+		}
+		if (response->body != NULL) {
+			free(response->body);
+		}
+
+		free(response);
+	}
+}
+
 // src/parser.c

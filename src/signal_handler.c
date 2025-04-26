@@ -49,11 +49,19 @@ void HandleSignal(int sig) {
 	}
 }
 
+void DisableSignalsInThread() {
+	sigset_t set;
+	sigemptyset(&set);
+	sigaddset(&set, SIGINT);
+	sigaddset(&set, SIGTERM);
+	pthread_sigmask(SIG_BLOCK, &set, NULL);
+}
+
 void CleanupSignalHandlers() {
 	if (pthread_mutex_destroy(&signal_lock) != 0) {
 		perror("Error: In CleanupSignalHandlers(): pthread_mutex_destroy() failed");
 	}
-	
+
 	queue_ref = NULL;
 }
 

@@ -94,7 +94,7 @@ char* DatabaseGet(const char* key) {
 	return value;
 }
 
-void DatabasePost(const char* key, const char* value) {
+int DatabasePost(const char* key, const char* value) {
 	const char* sql =
 			"INSERT OR REPLACE INTO database (roll_num, name) VALUES (?, ?);";
 	sqlite3_stmt* stmt = NULL;
@@ -103,7 +103,7 @@ void DatabasePost(const char* key, const char* value) {
 		(void)fprintf(stderr,
 									"Error: In DatabasePost(): sqlite3_prepare_v2() failed: %s\n",
 									sqlite3_errmsg(database));
-		return;
+		return 0;
 	}
 
 	if (sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC) != SQLITE_OK ||
@@ -118,7 +118,7 @@ void DatabasePost(const char* key, const char* value) {
 										sqlite3_errmsg(database));
 		}
 
-		return;
+		return 0;
 	}
 
 	if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -133,13 +133,15 @@ void DatabasePost(const char* key, const char* value) {
 									"Error: In DatabasePost(): sqlite3_finalize() failed: %s\n",
 									sqlite3_errmsg(database));
 	}
+
+	return 1;
 }
 
-void DatabasePut(const char* key, const char* value) {
-	DatabasePost(key, value);
+int DatabasePut(const char* key, const char* value) {
+	return DatabasePost(key, value);
 }
 
-void DatabaseDelete(const char* key) {
+int DatabaseDelete(const char* key) {
 	const char* sql = "DELETE FROM database WHERE roll_num = ?;";
 	sqlite3_stmt* stmt = NULL;
 
@@ -149,7 +151,7 @@ void DatabaseDelete(const char* key) {
 				"Error: In DatabaseDelete(): sqlite3_prepare_v2() failed: %s\n",
 				sqlite3_errmsg(database));
 
-		return;
+		return 0;
 	}
 
 	if (sqlite3_bind_text(stmt, 1, key, -1, SQLITE_STATIC) != SQLITE_OK) {
@@ -165,7 +167,7 @@ void DatabaseDelete(const char* key) {
 					sqlite3_errmsg(database));
 		}
 
-		return;
+		return 0;
 	}
 
 	if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -180,6 +182,8 @@ void DatabaseDelete(const char* key) {
 									"Error: In DatabaseDelete(): sqlite3_finalize() failed: %s\n",
 									sqlite3_errmsg(database));
 	}
+
+	return 1;
 }
 
 void CleanupDatabase() {

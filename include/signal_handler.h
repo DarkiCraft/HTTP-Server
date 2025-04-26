@@ -28,6 +28,15 @@ void InitSignalHandlers(Queue* queue);
 void HandleSignal(int sig);
 
 /**
+ * @brief Disables signals like SIGINT and SIGTERM for the calling thread.
+ *
+ * This function blocks SIGINT and SIGTERM in the calling thread to prevent
+ * signal interruption during critical operations, such as handling client
+ * requests or server tasks.
+ */
+void DisableSignalsInThread();
+
+/**
  * @brief Cleans up signal handlers and associated resources.
  *
  * This function should be called before the program exits to ensure proper

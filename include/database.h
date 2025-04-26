@@ -36,8 +36,9 @@ char* DatabaseGet(const char* key);
  *
  * @param key The key to set.
  * @param value The value to associate with the key.
+ * @return 1 if successful, 0 otherwise.
  */
-void DatabasePost(const char* key, const char* value);
+int DatabasePost(const char* key, const char* value);
 
 /**
  * @brief Puts a key-value pair into database.
@@ -48,8 +49,9 @@ void DatabasePost(const char* key, const char* value);
  *
  * @param key The key to set.
  * @param value The value to associate with the key.
+ * @return 1 if successful, 0 otherwise.
  */
-void DatabasePut(const char* key, const char* value);
+int DatabasePut(const char* key, const char* value);
 
 /**
  * @brief Deletes a key-value pair from database.
@@ -57,8 +59,9 @@ void DatabasePut(const char* key, const char* value);
  * If the key does not exist, this operation is ignored.
  *
  * @param key The key to delete.
+ * @return 1 if successful, 0 otherwise.
  */
-void DatabaseDelete(const char* key);
+int DatabaseDelete(const char* key);
 
 /**
  * @brief Cleans up the database system.

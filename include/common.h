@@ -45,6 +45,11 @@ extern const size_t BUFFER_SIZE;
  */
 extern volatile sig_atomic_t is_server_running;
 
+extern const size_t HTTP_INVALID_METHOD;
+extern const size_t HTTP_BAD_REQUEST;
+extern const size_t HTTP_NOT_FOUND;
+extern const size_t HTTP_OK;
+
 /**
  * @brief Sets a block of memory to a specified value.
  *

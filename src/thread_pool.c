@@ -7,7 +7,9 @@
 
 #include "common.h"
 #include "parser.h"
+#include "queue.h"
 #include "signal_handler.h"
+#include "transaction_handler.h"
 
 static void HandleClient(int client_socket) {
 	char buffer[BUFFER_SIZE];
@@ -114,11 +116,7 @@ void InitThreadPool(ThreadPool* pool, int num_thread, Queue* queue) {
 }
 
 void* WorkerThread(void* arg) {
-	sigset_t set;
-	sigemptyset(&set);
-	sigaddset(&set, SIGINT);
-	sigaddset(&set, SIGTERM);
-	pthread_sigmask(SIG_BLOCK, &set, NULL);
+	DisableSignalsInThread();
 
 	while (is_server_running) {
 		int client_socket = Dequeue(((ThreadPool*)arg)->queue);
@@ -126,7 +124,7 @@ void* WorkerThread(void* arg) {
 			continue;
 		}
 
-		HandleClient(client_socket);
+		HandleTransaction(client_socket);
 
 		if (close(client_socket) < 0) {
 			perror("Error: In WorkerThread(): close() failed");
