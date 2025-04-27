@@ -9,10 +9,10 @@ void InitTerminalConfig() {
 	if (tcgetattr(STDIN_FILENO, &term) == 0) {
 		term.c_lflag &= ~ECHOCTL;
 		if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &term) != 0) {
-			perror("Error: In DisableConstrolCharEcho(): tcsetattr() failed");
+			perror("Error: In InitTerminalConfig(): tcsetattr() failed");
 		}
 	} else {
-		perror("Error: In DisableConstrolCharEcho(): tcgetattr() failed");
+		perror("Error: In InitTerminalConfig(): tcgetattr() failed");
 	}
 
 	(void)freopen("/dev/null", "w", stderr);
