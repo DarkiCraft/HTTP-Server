@@ -26,7 +26,7 @@ After running the server, note down the IP address and port displayed in the ter
 
 To make a `GET` request, use the following format:
 ```bash
-curl http://<server_ip>:<port>?roll_num=23K-0760
+curl -i http://<server_ip>:<port>?roll_num=23K-0760
 ```
 
 **Note:** The roll number must follow the format `YYA-DDDD` (e.g., `23K-0760`).
@@ -37,7 +37,7 @@ curl http://<server_ip>:<port>?roll_num=23K-0760
 
 To make a `POST` request, send the roll number and name in JSON format:
 ```bash
-curl http://<server_ip>:<port> -X POST -H "Content-Type: application/json" -d '{"roll_num": "23K-0760", "name": "Muhammad Abd-Ur-Rahman"}'
+curl -i http://<server_ip>:<port> -X POST -H "Content-Type: application/json" -d '{"roll_num": "23K-0760", "name": "Muhammad Abd-Ur-Rahman"}'
 ```
 
 ---
@@ -46,7 +46,7 @@ curl http://<server_ip>:<port> -X POST -H "Content-Type: application/json" -d '{
 
 To make a `DELETE` request, specify the roll number in the query string:
 ```bash
-curl http://<server_ip>:<port>?roll_num=23K-0760 -X DELETE
+curl -i http://<server_ip>:<port>?roll_num=23K-0760 -X DELETE
 ```
 
 ---
