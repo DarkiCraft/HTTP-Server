@@ -9,19 +9,18 @@
  * @brief Disables terminal echoing of control characters like ^C and ^Z.
  *
  * This function modifies the terminal attributes to prevent display of control
- * characters when typed (e.g., ^C for SIGINT). Useful for cleaner terminal
- * output in server applications or custom shells.
+ * characters when typed (e.g., ^C for SIGINT), and redirects stderr to
+ * /dev/null.
  */
-void InitTerminalControlChars();
+void InitTerminalConfig();
 
 /**
  * @brief Restores terminal echoing of control characters like ^C and ^Z.
  *
  * This function re-enables the echoing of control characters, reversing the
- * effect of DisableControlCharEcho(). Should be called before exiting the
- * program to restore expected terminal behavior.
+ * effect of InitTerminalConfig().
  */
-void CleanupTerminalControlChars();
+void RevertTerminalConfig();
 
 #endif	// TERMINAL_H
 

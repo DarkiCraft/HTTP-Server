@@ -1,105 +1,60 @@
 
-# 🧪 Git Guide for Our OS Project
+# Usage Guide
 
-Hello Pookies! This guide will help you get started with Git and GitHub for our OS project. Follow the steps carefully and don’t hesitate to ask if you’re confused at any point.
+## Compilation and Running the Server
+
+To compile the project, run:
+```bash
+make
+```
+
+If you encounter issues, try cleaning and rebuilding:
+```bash
+make clean && make
+```
+
+To start the server:
+```bash
+./server
+```
+
+After running the server, note down the IP address and port displayed in the terminal. You will use this information for the requests.
 
 ---
 
-## ✅ Step 1: Initial Git Setup
-This only needs to be done ONCE.
+## GET Requests
 
-If you haven’t already, install Git:  
+To make a `GET` request, use the following format:
 ```bash
-sudo apt update
-sudo apt install git
+curl http://<server_ip>:<port>?roll_num=23K-0760
 ```
 
-After installing, open your terminal and set your identity:
-
-```bash
-git config --global user.name "<your-github-username>"
-git config --global user.email "<your.email@example.com>"
-```
-
-Clone the project from GitHub to your computer:
-
-```bash
-git clone https://github.com/DarkiCraft/os-project.git
-cd os-project
-```
-
-Each teammate should make their own branch to work independently:
-
-```bash
-git checkout -b "<your-branch-name>"
-```
-
-These are the branch names we will use:
-- Ali   -> `ali`
-- Ammar -> `amm`
-- Arham -> `arh`
-- Me    -> `abd`
-
-This lets everyone work without breaking each other’s code.
+**Note:** The roll number must follow the format `YYA-DDDD` (e.g., `23K-0760`).
 
 ---
 
-## ✅ Step 2: Update to the Latest Commit
+## POST Requests
 
-Before making any changes to your code, make sure you are synced to main
-
+To make a `POST` request, send the roll number and name in JSON format:
 ```bash
-git checkout "<your-branch-name>"
-git pull origin main
+curl http://<server_ip>:<port> -X POST -H "Content-Type: application/json" -d '{"roll_num": "23K-0760", "name": "Muhammad Abd-Ur-Rahman"}'
 ```
 
 ---
 
-## ✅ Step 3: Work on Your Code
+## DELETE Requests
 
-Make changes in your code (in VS Code preferably). Then save and commit your work:
-
+To make a `DELETE` request, specify the roll number in the query string:
 ```bash
-git add .
-git commit -m "<comment changes>"
-```
-The comment is necessary. Try to make it descriptive to what changes you implemented.
-Finally, push your changes to your branch:
-
-```bash
-git push origin "<your-branch-name>"
+curl http://<server_ip>:<port>?roll_num=23K-0760 -X DELETE
 ```
 
 ---
 
-## ✅ Step 4: There is No Step 4!
+## Summary
 
-Your work is done. I’ll review your changes and merge it into the main branch.
+- **GET:** Retrieve information based on the roll number.
+- **POST:** Add information (roll number and name).
+- **DELETE:** Remove information by specifying the roll number.
 
----
-
-## 📌 Summary of Commands
-
-```bash
-# First time setup
-git config --global user.name "<your-github-username>"
-git config --global user.email "<your.email@example.com>"
-
-git clone https://github.com/DarkiCraft/os-project.git
-cd os-project
-
-git checkout -b "<your-branch-name>"
-
-# Before working on code changes, make sure you are on the latest commit
-git checkout "<your-branch-name>"
-git pull origin main
-
-# Save and upload your changes
-git add .
-git commit -m "<comment changes>"
-git push origin "<your-branch-name>"
-```
-
----
-
-💬 If you mess up or get errors, don’t panic. Just send a screenshot in the group.
+Ensure the server is running and accessible before making any requests.

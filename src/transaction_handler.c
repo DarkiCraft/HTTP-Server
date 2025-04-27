@@ -13,7 +13,7 @@ static HTTPResponse* HandleInvalidRequest() {
 	const char* body =
 			"{\r\n"
 			"\t\"status\": \"error\",\r\n"
-			"\t\"message\": \"Supported methods: GET, POST, PUT, DELETE.\"\r\n"
+			"\t\"message\": \"Supported methods: GET, POST, DELETE.\"\r\n"
 			"}\r\n";
 
 	char header[BUFFER_SIZE];

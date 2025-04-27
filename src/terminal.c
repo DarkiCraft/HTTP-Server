@@ -4,7 +4,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-void InitTerminalControlChars() {
+void InitTerminalConfig() {
 	struct termios term;
 	if (tcgetattr(STDIN_FILENO, &term) == 0) {
 		term.c_lflag &= ~ECHOCTL;
@@ -18,7 +18,7 @@ void InitTerminalControlChars() {
 	(void)freopen("/dev/null", "w", stderr);
 }
 
-void CleanupTerminalControlChars() {
+void RevertTerminalConfig() {
 	struct termios term;
 	if (tcgetattr(STDIN_FILENO, &term) == 0) {
 		term.c_lflag |= ECHOCTL;

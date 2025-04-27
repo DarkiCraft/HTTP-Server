@@ -16,7 +16,7 @@ static ThreadPool thread_pool;
 static int server_socket;
 
 void InitServer() {
-	InitTerminalControlChars();
+	InitTerminalConfig();
 	InitSignalHandlers(&queue);
 
 	server_socket = CreateServerSocket((int)PORT, (int)MAX_PENDING_CONNECTIONS);
@@ -56,7 +56,7 @@ void ShutdownServer() {
 	CleanupDatabase();
 	CloseServerSocket(server_socket);
 	CleanupSignalHandlers();
-	CleanupTerminalControlChars();
+	RevertTerminalConfig();
 
 	printf("Server shutting down...\n");
 
