@@ -170,31 +170,63 @@ void InputFields(RequestType request) {
 }
 
 HTTPResponse* SendRequest(RequestType request_type) {
-	HTTPResponse* response = NULL;
-
 	char request[BUFFER_SIZE];
 	memset(request, 0, sizeof(request));
 
 	switch (request_type) {
 		case GET:
-			snprintf(request,
-							 sizeof(request),
-							 "curl -s http://%s:%zu?roll_num=%s",
-							 server_ip,
-							 PORT,
-							 roll_num);
+			if (snprintf(request,
+									 sizeof(request),
+									 "curl -s http://%s:%zu?roll_num=%s",
+									 server_ip,
+									 PORT,
+									 roll_num) < 0) {
+				perror("Error: In SendRequest(): snprintf() failed");
+				exit(EXIT_FAILURE);
+			};
 			break;
 		case POST:
-			snprintf(request, sizeof(request), "curl")
-
+			if (snprintf(request,
+									 sizeof(request),
+									 "curl -s http://%s:%zu "
+									 "-H \"Content-Type: application/json\" "
+									 "-d \'\"roll_num\":\"%s\", \"name\": \"%s\"\'",
+									 server_ip,
+									 PORT,
+									 roll_num,
+									 name) < 0) {
+				perror("Error: In SendRequest(): snprintf() failed");
+				exit(EXIT_FAILURE);
+			}
 			break;
 		case DELETE:
-
+			if (snprintf(request,
+									 sizeof(request),
+									 "curl -s http://%s:%zu?roll_num=%s -X DELETE",
+									 server_ip,
+									 PORT,
+									 roll_num) < 0) {
+				perror("Error: In SendRequest(): snprintf() failed");
+				exit(EXIT_FAILURE);
+			}
 			break;
+
 		default:
 			perror("Error: In SendRequest(): Invalid request type");
 			exit(EXIT_FAILURE);
 	}
+
+	FILE* fp = popen(request, "r");
+	if (fp == NULL) {
+		perror("Error: In SendRequest(): popen() failed");
+		return NULL;
+	}
+
+	char response[BUFFER_SIZE];
+	memset(response, 0, sizeof(response));
+
+	size_t total_read = fread(response, 1, sizeof(response) - 1, fp);
+	response[total_read] = '\0';	// null terminate
 
 	return response;
 }
