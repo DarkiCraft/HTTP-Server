@@ -14,7 +14,7 @@ static HTTPResponse* HandleInvalidRequest() {
 			"{\r\n"
 			"\t\"status\": \"error\",\r\n"
 			"\t\"message\": \"Supported methods: GET, POST, DELETE.\"\r\n"
-			"}\r\n";
+			"}";
 
 	char header[BUFFER_SIZE];
 	if (snprintf(header,
@@ -57,7 +57,7 @@ static HTTPResponse* HandleNotFound() {
 			"{\r\n"
 			"\t\"status\": \"error\",\r\n"
 			"\t\"message\": \"roll_num not found.\"\r\n"
-			"}\r\n";
+			"}";
 
 	char header[BUFFER_SIZE];
 	if (snprintf(header,
@@ -115,7 +115,7 @@ static HTTPResponse* HandleGET(HTTPRequest* request) {
 							 "\t\"status\": \"success\",\r\n"
 							 "\t\"roll_num\": \"%s\",\r\n"
 							 "\t\"name\": \"%s\"\r\n"
-							 "}\r\n",
+							 "}",
 							 after_equal_to,
 							 name) < 0) {
 		(void)fprintf(stderr, "Error: In HandleGET(): snprintf() failed\n");
@@ -198,7 +198,7 @@ static HTTPResponse* HandlePOST(HTTPRequest* request) {
 							 "{\r\n"
 							 "\t\"status\": \"success\",\r\n"
 							 "\t\"message\": \"Record added successfully.\"\r\n"
-							 "}\r\n") < 0) {
+							 "}") < 0) {
 		(void)fprintf(stderr, "Error: In HandlePOST(): snprintf() failed\n");
 	}
 
@@ -255,7 +255,7 @@ static HTTPResponse* HandleDELETE(HTTPRequest* request) {
 							 "{\r\n"
 							 "\t\"status\": \"success\",\r\n"
 							 "\t\"message\": \"roll_num deleted successfully.\"\r\n"
-							 "}\r\n") < 0) {
+							 "}") < 0) {
 		(void)fprintf(stderr, "Error: In HandleDELETE(): snprintf() failed\n");
 	}
 

@@ -15,85 +15,85 @@ const size_t HTTP_BAD_REQUEST = 400;
 const size_t HTTP_NOT_FOUND = 404;
 const size_t HTTP_OK = 200;
 
-size_t my_strnlen(const char* s, size_t maxlen) {
-	if (s == NULL) {
-		return 0;
-	}
+// size_t strnlen(const char* s, size_t maxlen) {
+// 	if (s == NULL) {
+// 		return 0;
+// 	}
 
-	const char* p = (const char*)memchr(s, '\0', maxlen);
-	return p ? (size_t)(p - s) : maxlen;
-}
+// 	const char* p = (const char*)memchr(s, '\0', maxlen);
+// 	return p ? (size_t)(p - s) : maxlen;
+// }
 
-void* my_memset(void* dest, int value, size_t n) {
-	if (dest == NULL) {
-		return NULL;
-	}
+// void* memset(void* dest, int value, size_t n) {
+// 	if (dest == NULL) {
+// 		return NULL;
+// 	}
 
-	unsigned char* d = dest;
-	volatile unsigned char* vd = d;
+// 	unsigned char* d = dest;
+// 	volatile unsigned char* vd = d;
 
-	while (n--) {
-		*vd++ = (unsigned char)value;
-	}
+// 	while (n--) {
+// 		*vd++ = (unsigned char)value;
+// 	}
 
-	return dest;
-}
+// 	return dest;
+// }
 
-void* my_memcpy(void* dest, const void* src, size_t n) {
-	if (dest == NULL || src == NULL) {
-		return NULL;
-	}
+// void* memcpy(void* dest, const void* src, size_t n) {
+// 	if (dest == NULL || src == NULL) {
+// 		return NULL;
+// 	}
 
-	if (n == 0) {
-		return dest;
-	}
+// 	if (n == 0) {
+// 		return dest;
+// 	}
 
-	unsigned char* d = dest;
-	const unsigned char* s = src;
+// 	unsigned char* d = dest;
+// 	const unsigned char* s = src;
 
-	volatile unsigned char* vd = d;
-	volatile const unsigned char* vs = s;
+// 	volatile unsigned char* vd = d;
+// 	volatile const unsigned char* vs = s;
 
-	if (vd > vs && vd < vs + n) {
-		vd += n;
-		vs += n;
-		while (n--) {
-			*(--vd) = *(--vs);
-		}
-	} else {
-		while (n--) {
-			*vd++ = *vs++;
-		}
-	}
+// 	if (vd > vs && vd < vs + n) {
+// 		vd += n;
+// 		vs += n;
+// 		while (n--) {
+// 			*(--vd) = *(--vs);
+// 		}
+// 	} else {
+// 		while (n--) {
+// 			*vd++ = *vs++;
+// 		}
+// 	}
 
-	return dest;
-}
+// 	return dest;
+// }
 
-char* my_strdup(const char* s) {
-	if (s == NULL) {
-		return NULL;
-	}
+// char* strdup(const char* s) {
+// 	if (s == NULL) {
+// 		return NULL;
+// 	}
 
-	size_t len = strlen(s) + 1;
-	char* dup = malloc(len);
-	if (dup == NULL) {
-		return NULL;
-	}
+// 	size_t len = strlen(s) + 1;
+// 	char* dup = malloc(len);
+// 	if (dup == NULL) {
+// 		return NULL;
+// 	}
 
-	my_memcpy(dup, s, len);
+// 	memcpy(dup, s, len);
 
-	return dup;
-}
+// 	return dup;
+// }
 
-char* my_strndup(const char* s, size_t n) {
-	size_t len = my_strnlen(s, n);
-	char* new_str = malloc(len + 1);
-	if (new_str == NULL) {
-		return NULL;
-	}
-	my_memcpy(new_str, s, len);
-	new_str[len] = '\0';
-	return new_str;
-}
+// char* strndup(const char* s, size_t n) {
+// 	size_t len = strnlen(s, n);
+// 	char* new_str = malloc(len + 1);
+// 	if (new_str == NULL) {
+// 		return NULL;
+// 	}
+// 	memcpy(new_str, s, len);
+// 	new_str[len] = '\0';
+// 	return new_str;
+// }
 
 // src/common.c

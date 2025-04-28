@@ -11,8 +11,7 @@
 typedef struct {
 	char* method;		// HTTP method (e.g., "GET", "POST")
 	char* path;			// Request path (e.g., "/api/data")
-	char* headers;	// Full headers as a string (optional: can be parsed into
-									// key-value pairs)
+	char* headers;	// Full headers as a string
 	char* body;			// HTTP request body
 } HTTPRequest;
 
@@ -25,9 +24,9 @@ typedef struct {
  * after being sent to avoid memory leaks.
  */
 typedef struct {
-	int status_code;	// The HTTP status code (e.g., 200, 404, 500).
-	char* headers;	// The headers section of the response (optional, may be NULL)
-	char* body;			// The body of the response (optional, may be NULL).
+	int status_code;	// The HTTP status code (e.g., 200, 404, 405).
+	char* headers;		// The headers section of the response (NULL-able)
+	char* body;				// The body of the response (NULL-able).
 } HTTPResponse;
 
 /**
@@ -58,8 +57,8 @@ void FreeHTTPRequest(HTTPRequest* request);
  * Helper to easily create an HTTP response with status, headers, and body.
  *
  * @param status_code HTTP status code.
- * @param headers HTTP headers string (may be NULL).
- * @param body HTTP body string (may be NULL).
+ * @param headers HTTP headers string (NULL-able).
+ * @param body HTTP body string (NULL-able).
  * @return A dynamically allocated HTTPResponse. Must be freed after use.
  */
 HTTPResponse* CreateHTTPResponse(int status_code,

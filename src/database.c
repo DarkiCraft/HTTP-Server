@@ -3,6 +3,7 @@
 #include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "common.h"
 
@@ -79,7 +80,7 @@ char* DatabaseGet(const char* key) {
 
 	const char* name = (const char*)sqlite3_column_text(stmt, 0);
 	if (name != NULL) {
-		value = my_strdup(name);
+		value = strdup(name);
 	} else {
 		(void)fprintf(stderr,
 									"Error: In DatabaseGet(): sqlite3_column_text() failed\n");

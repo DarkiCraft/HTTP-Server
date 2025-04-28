@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# === Configure Script === #
+# Checks environment and installs dependencies for the build
+
+# Helper function to check if a command exists
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Helper function to install missing packages
+install_package() {
+  check_sudo
+  PACKAGE=$1
+  sudo apt install -y "$PACKAGE" >/dev/null 2>&1
+}
+
+# Helper function to check if user has sudo privileges
+check_sudo() {
+  if ! command_exists sudo; then
+    echo "[ERROR] 'sudo' is required to install the required command/package. Please run the script again with sudo. Exiting..."
+    exit 1
+  fi
+}
+
+echo "=== Starting configuration ==="
+
+# === 1. Update package list === #
+echo "[INFO] Updating package list..."
+sudo apt update >/dev/null 2>&1
+
+# === 2. Check for required commands and install missing ones === #
+REQUIRED_COMMANDS=("gcc" "make" "ar")
+REQUIRED_PACKAGES=("binutils" "libsqlite3-dev")
+
+# Check and install commands
+for CMD in "${REQUIRED_COMMANDS[@]}"; do
+  if command_exists "$CMD"; then
+    echo "[OK] Command '$CMD' found."
+  else
+    echo "[WARN] Command '$CMD' missing. Installing..."
+    install_package "build-essential"
+    
+    # Recheck if the command is installed
+    if command_exists "$CMD"; then
+      echo "[OK] Command '$CMD' found."
+    else
+      echo "[ERROR] Command '$CMD' not found after installing 'build-essential'. Exiting..."
+      exit 1
+    fi
+  fi
+done
+
+# === 3. Install required packages === #
+for PKG in "${REQUIRED_PACKAGES[@]}"; do
+  dpkg -s "$PKG" >/dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    echo "[WARN] Package '$PKG' not found. Installing..."
+    install_package "$PKG"
+    
+    # Recheck if the package is installed
+    dpkg -s "$PKG" >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      echo "[OK] Package '$PKG' found."
+    else
+      echo "[ERROR] Package '$PKG' not found after installation. Exiting..."
+      exit 1
+    fi
+  else
+    echo "[OK] Package '$PKG' found."
+  fi
+done
+
+# === 4. Check GCC version === #
+GCC_VERSION=$(gcc -dumpfullversion | cut -d. -f1)
+MIN_GCC_VERSION=5
+
+# Check for a valid GCC version
+if [[ ! "$GCC_VERSION" =~ ^[0-9]+$ ]] || [ "$GCC_VERSION" -lt "$MIN_GCC_VERSION" ]; then
+  echo "[ERROR] gcc $GCC_VERSION detected. gcc >= $MIN_GCC_VERSION is required. Please upgrade manually. Exiting..."
+  exit 1
+else
+  echo "[OK] gcc $GCC_VERSION is sufficient."
+fi
+
+# === 5. Final message === #
+echo "=== Configuration successful ==="

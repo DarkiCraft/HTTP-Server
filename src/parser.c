@@ -22,9 +22,9 @@ HTTPRequest* ParseHTTPRequest(const char* raw_request) {
 	size_t header_len =
 			(header_end) ? (size_t)(header_end - raw_request) : strlen(raw_request);
 
-	char* raw_request_copy = my_strndup(raw_request, header_len);
+	char* raw_request_copy = strndup(raw_request, header_len);
 	if (raw_request_copy == NULL) {
-		perror("Error: In ParseHTTPRequest(): my_strndup() failed");
+		perror("Error: In ParseHTTPRequest(): strndup() failed");
 		free(request);
 		return NULL;
 	}
@@ -54,28 +54,28 @@ HTTPRequest* ParseHTTPRequest(const char* raw_request) {
 	}
 
 	if (method != NULL) {
-		request->method = my_strdup(method);
+		request->method = strdup(method);
 		if (request->method == NULL) {
-			perror("Error: In ParseHTTPRequest(): my_strdup() failed");
+			perror("Error: In ParseHTTPRequest(): strdup() failed");
 			free(raw_request_copy);
 			free(request);
 			return NULL;
 		}
 	}
 
-	request->path = my_strdup(path);
+	request->path = strdup(path);
 	if (request->path == NULL) {
-		perror("Error: In ParseHTTPRequest(): my_strdup() failed");
+		perror("Error: In ParseHTTPRequest(): strdup() failed");
 		free(raw_request_copy);
 		free(request);
 		return NULL;
 	}
 
 	request->headers =
-			my_strndup(raw_request + strlen(line) + 2, header_len - strlen(line) - 2);
+			strndup(raw_request + strlen(line) + 2, header_len - strlen(line) - 2);
 
 	if (header_end != NULL) {
-		request->body = my_strdup(header_end + 4);
+		request->body = strdup(header_end + 4);
 	}
 
 	free(raw_request_copy);
@@ -106,9 +106,9 @@ HTTPResponse* CreateHTTPResponse(int status_code,
 	response->status_code = status_code;
 
 	if (headers != NULL) {
-		response->headers = my_strdup(headers);
+		response->headers = strdup(headers);
 		if (response->headers == NULL) {
-			perror("Error: In CreateHTTPResponse(): my_strdup() failed");
+			perror("Error: In CreateHTTPResponse(): strdup() failed");
 			free(response);
 			return NULL;
 		}
@@ -117,9 +117,9 @@ HTTPResponse* CreateHTTPResponse(int status_code,
 	}
 
 	if (body != NULL) {
-		response->body = my_strdup(body);
+		response->body = strdup(body);
 		if (response->body == NULL) {
-			perror("Error: In CreateHTTPResponse(): my_strdup() failed");
+			perror("Error: In CreateHTTPResponse(): strdup() failed");
 			free(response->headers);
 			free(response);
 			return NULL;

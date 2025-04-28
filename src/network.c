@@ -29,7 +29,7 @@ static void PrintLocalIP() {
 			inet_ntop(AF_INET, addr, ip_str, INET_ADDRSTRLEN);
 
 			if (ifa->ifa_name[0] != 'l') {
-				printf("Server listening on: http://%s:%zu\n", ip_str, PORT);
+				printf("Server listening on: %s\n", ip_str);
 				break;
 			}
 		}

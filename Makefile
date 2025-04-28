@@ -1,5 +1,12 @@
 # === Variables === #
 CXX := gcc
+
+#CXXFLAGS := -std=gnu99 \
+#            -O3 -flto \
+#            -Iinclude \
+#						-D_GNU_SOURCE -DNDEBUG \
+#            -Wall -Wextra -Wpedantic
+
 CXXFLAGS := -std=gnu23 \
             -Wall -Wextra -Wpedantic \
             -O0 -g \
@@ -32,9 +39,11 @@ all: $(TARGETS)
 
 client: $(CLIENT_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+	strip $@
 
 server: $(SERVER_OBJ) $(LIB)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+	strip $@
 
 $(LIB): $(OBJ)
 	@mkdir -p $(BUILD_DIR)

@@ -15,7 +15,9 @@ void InitTerminalConfig() {
 		perror("Error: In InitTerminalConfig(): tcgetattr() failed");
 	}
 
+#ifdef NDEBUG
 	(void)freopen("/dev/null", "w", stderr);
+#endif
 }
 
 void RevertTerminalConfig() {
