@@ -37,7 +37,7 @@ TARGETS := server client
 # === Targets === #
 all: $(TARGETS)
 
-client: $(CLIENT_OBJ)
+client: $(CLIENT_OBJ) $(LIB)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 	strip $@
 

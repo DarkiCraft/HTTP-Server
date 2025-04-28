@@ -11,9 +11,10 @@
  * The server will handle these types of requests.
  */
 typedef enum {
-	GET,		// HTTP GET request type
-	POST,		// HTTP POST request type
-	DELETE	// HTTP DELETE request type
+	GET,		 // HTTP GET request type
+	POST,		 // HTTP POST request type
+	DELETE,	 // HTTP DELETE request type
+	INVALID	 // Invalid request type
 } RequestType;
 
 /**
@@ -45,27 +46,9 @@ RequestType SelectRequestType();
  */
 void InputFields(RequestType request);
 
-/**
- * @brief Sends the HTTP request to the server.
- *
- * This function constructs and sends the HTTP request to the server based on
- * the selected request type. It will handle connection, formatting, and
- * transmission.
- *
- * @param request The selected HTTP request type (GET, POST, DELETE).
- * @return A pointer to an HTTPResponse structure containing the server's
- * response.
- */
-HTTPResponse* SendRequest(RequestType request);
+char* SendRequest(RequestType request);
 
-/**
- * @brief Parses the server response.
- *
- * This function processes the HTTP response from the server, extracting
- * relevant information such as status codes, error messages, or data, depending
- * on the request.
- */
-void ParseResponse();
+HTTPResponse* ParseResponse(char* raw_response);
 
 /**
  * @brief Runs the client application.

@@ -131,6 +131,73 @@ HTTPResponse* CreateHTTPResponse(int status_code,
 	return response;
 }
 
+HTTPResponse* ParseHTTPResponse(const char* raw_response) {
+	if (raw_response == NULL) {
+		perror("Error: In ParseHTTPResponse(): raw_response is NULL");
+		return NULL;
+	}
+
+	HTTPResponse* response = (HTTPResponse*)malloc(sizeof(HTTPResponse));
+	if (response == NULL) {
+		perror("Error: malloc() failed for HTTPResponse");
+		return NULL;
+	}
+	memset(response, 0, sizeof(HTTPResponse));
+
+	char* line_end = strstr(raw_response, "\r\n");
+	if (line_end == NULL) {
+		perror(
+				"Error: In ParseHTTPResponse(): Invalid response format (no header "
+				"line found)");
+		free(response);
+		return NULL;
+	}
+
+	size_t status_line_len = line_end - raw_response;
+	char* status_line = strndup(raw_response, status_line_len);
+	if (status_line == NULL) {
+		perror("Error: In ParseHTTPResponse(): strndup() failed for status line");
+		free(response);
+		return NULL;
+	}
+
+	int status_code = 0;
+	if (sscanf(status_line, "HTTP/1.1 %d", &status_code) != 1) {
+		perror("Error: In ParseHTTPResponse(): Failed to extract status code");
+		free(status_line);
+		free(response);
+		return NULL;
+	}
+	response->status_code = status_code;
+	free(status_line);
+
+	char* header_end = strstr(raw_response, "\r\n\r\n");
+	if (header_end == NULL) {
+		perror("Error: In ParseHTTPResponse(): No headers end found");
+		free(response);
+		return NULL;
+	}
+
+	size_t header_len = header_end - raw_response;
+	response->headers = strndup(raw_response + status_line_len + 2,
+															header_len - status_line_len - 2);
+	if (response->headers == NULL) {
+		perror("Error: In ParseHTTPResponse(): strndup() failed for headers");
+		free(response);
+		return NULL;
+	}
+
+	response->body = strdup(header_end + 4);
+	if (response->body == NULL) {
+		perror("Error: In ParseHTTPResponse(): strdup() failed for body");
+		free(response->headers);
+		free(response);
+		return NULL;
+	}
+
+	return response;
+}
+
 void FreeHTTPResponse(HTTPResponse* response) {
 	if (response != NULL) {
 		if (response->headers != NULL) {

@@ -29,7 +29,8 @@
 		"utility": "c",
 		"text_encoding": "c",
 		"typeinfo": "c",
-		"terminal.h": "c"
+		"terminal.h": "c",
+		"client.h": "c"
 	},
 
 	"editor.defaultFormatter": "ms-vscode.cpptools",

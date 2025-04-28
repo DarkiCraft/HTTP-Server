@@ -13,15 +13,16 @@
 #include "common.h"
 #include "terminal.h"
 
+const int MAX_SERVER_IP_LENGTH = 32;
+
 const int ROLL_NUM_LENGTH = 8;
 const int MAX_NAME_LENGTH = 128;
 
 static int is_client_running = 0;
 
-static char server_ip[32] = {0};
-
-static char roll_num[ROLL_NUM_LENGTH + 1] = {0};
-static char name[MAX_NAME_LENGTH + 1] = {0};
+static char* server_ip = NULL;
+static char* roll_num = NULL;
+static char* name = NULL;
 
 static void HandleSignal(int sig) {
 	if (sig == SIGINT || sig == SIGTERM) {
@@ -30,21 +31,9 @@ static void HandleSignal(int sig) {
 }
 
 static int ValidateServerIP(const char* server_ip) {
-	if (strchr(server_ip, ':') == NULL) {
-		return -1;
-	}
-
 	const char* p = server_ip;
 	while (*p && *p != ':') {
 		if (!isdigit(*p) && *p != '.') {
-			return -1;
-		}
-		p++;
-	}
-
-	p++;	// skip ':'
-	while (*p) {
-		if (!isdigit(*p)) {
 			return -1;
 		}
 		p++;
@@ -82,6 +71,19 @@ static int CheckServerReachability(const char* ip, int port) {
 void InitClient() {
 	is_client_running = 1;
 
+	server_ip = (char*)malloc(MAX_SERVER_IP_LENGTH + 1);
+	roll_num = (char*)malloc(ROLL_NUM_LENGTH + 1);
+	name = (char*)malloc(MAX_NAME_LENGTH + 1);
+
+	if (roll_num == NULL || name == NULL || server_ip == NULL) {
+		perror("Error: In InitClient(): malloc() failed");
+		exit(EXIT_FAILURE);
+	}
+
+	(void)memset(server_ip, 0, MAX_SERVER_IP_LENGTH);
+	(void)memset(roll_num, 0, ROLL_NUM_LENGTH);
+	(void)memset(name, 0, MAX_NAME_LENGTH);
+
 	InitTerminalConfig();
 
 	struct sigaction sa;
@@ -99,7 +101,6 @@ void InitClient() {
 		exit(EXIT_FAILURE);
 	}
 
-	char server_ip[32] = {0};
 	(void)printf("Enter server IP: ");
 	if (scanf("%s", server_ip) != 1) {
 		perror("Error: In InitClient(): scanf() failed");
@@ -107,12 +108,12 @@ void InitClient() {
 	}
 
 	if (ValidateServerIP(server_ip) != 0) {
-		perror("Error: In InitClient(): Invalid server IP format");
+		(void)fprintf(stderr, "Error: In InitClient(): Invalid server IP format\n");
 		exit(EXIT_FAILURE);
 	}
 
 	if (CheckServerReachability(server_ip, PORT) != 0) {
-		perror("Error: In InitClient(): Server is not reachable");
+		(void)fprintf(stderr, "Error: In InitClient(): Server is not reachable\n");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -145,6 +146,8 @@ RequestType SelectRequestType() {
 				break;
 		}
 	}
+
+	return INVALID;	 // unreachable
 }
 
 void InputFields(RequestType request) {
@@ -162,14 +165,19 @@ void InputFields(RequestType request) {
 		}
 
 		(void)printf("Enter name: ");
-		if (scanf("%s", name) != 1) {
-			perror("Error: In InputFields(): scanf() failed");
+		if (fgets(name, MAX_NAME_LENGTH, stdin) == NULL) {
+			perror("Error: In InputFields(): fgets() failed");
 			exit(EXIT_FAILURE);
+		}
+
+		size_t len = strlen(name);
+		if (len > 0 && name[len - 1] == '\n') {
+			name[len - 1] = '\0';	 // Remove newline character
 		}
 	}
 }
 
-HTTPResponse* SendRequest(RequestType request_type) {
+char* SendRequest(RequestType request_type) {
 	char request[BUFFER_SIZE];
 	memset(request, 0, sizeof(request));
 
@@ -177,20 +185,20 @@ HTTPResponse* SendRequest(RequestType request_type) {
 		case GET:
 			if (snprintf(request,
 									 sizeof(request),
-									 "curl -s http://%s:%zu?roll_num=%s",
+									 "curl -i -s http://%s:%zu?roll_num=%s",
 									 server_ip,
 									 PORT,
 									 roll_num) < 0) {
 				perror("Error: In SendRequest(): snprintf() failed");
 				exit(EXIT_FAILURE);
-			};
+			}
 			break;
 		case POST:
 			if (snprintf(request,
 									 sizeof(request),
-									 "curl -s http://%s:%zu "
+									 "curl -i -s http://%s:%zu "
 									 "-H \"Content-Type: application/json\" "
-									 "-d \'\"roll_num\":\"%s\", \"name\": \"%s\"\'",
+									 "-d '{\"roll_num\":\"%s\", \"name\":\"%s\"}'",
 									 server_ip,
 									 PORT,
 									 roll_num,
@@ -202,7 +210,7 @@ HTTPResponse* SendRequest(RequestType request_type) {
 		case DELETE:
 			if (snprintf(request,
 									 sizeof(request),
-									 "curl -s http://%s:%zu?roll_num=%s -X DELETE",
+									 "curl -i -s http://%s:%zu?roll_num=%s -X DELETE",
 									 server_ip,
 									 PORT,
 									 roll_num) < 0) {
@@ -210,7 +218,6 @@ HTTPResponse* SendRequest(RequestType request_type) {
 				exit(EXIT_FAILURE);
 			}
 			break;
-
 		default:
 			perror("Error: In SendRequest(): Invalid request type");
 			exit(EXIT_FAILURE);
@@ -226,14 +233,39 @@ HTTPResponse* SendRequest(RequestType request_type) {
 	memset(response, 0, sizeof(response));
 
 	size_t total_read = fread(response, 1, sizeof(response) - 1, fp);
-	response[total_read] = '\0';	// null terminate
+	response[total_read] = '\0';
 
-	return response;
+	if (ferror(fp)) {
+		perror("Error: In SendRequest(): fread() failed");
+		pclose(fp);
+		return NULL;
+	}
+
+	char* response_copy = (char*)malloc(strlen(response) + 1);
+	if (response_copy == NULL) {
+		perror("Error: In SendRequest(): malloc() failed");
+		pclose(fp);
+		return NULL;
+	}
+
+	strncpy(response_copy, response, total_read);
+	response_copy[total_read] = '\0';
+
+	if (pclose(fp) == -1) {
+		perror("Error: In SendRequest(): pclose() failed");
+		free(response_copy);
+		return NULL;
+	}
+
+	return response_copy;
 }
 
 void Cleanup() {
-	is_client_running = 0;
 	RevertTerminalConfig();
+
+	free(server_ip);
+	free(roll_num);
+	free(name);
 }
 
 int main() {
@@ -242,8 +274,13 @@ int main() {
 	while (is_client_running) {
 		RequestType request = SelectRequestType();
 		InputFields(request);
-		HTTPResponse* response = SendRequest(request);
-		ParseResponse(response);
+		char* raw_response = SendRequest(request);
+		if (raw_response == NULL) {
+			(void)fprintf(stderr, "Error: In main(): SendRequest() failed");
+			continue;
+		}
+		HTTPResponse* response = ParseHTTPResponse(raw_response);
+		// Print(response);
 		FreeHTTPResponse(response);
 	}
 

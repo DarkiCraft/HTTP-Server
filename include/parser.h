@@ -38,7 +38,7 @@ typedef struct {
  *
  * @param raw_request The raw HTTP request string.
  * @return A dynamically allocated HTTPRequest structure. Must be freed after
- * use.
+ * use. NULL on error
  */
 HTTPRequest* ParseHTTPRequest(const char* raw_request);
 
@@ -64,6 +64,17 @@ void FreeHTTPRequest(HTTPRequest* request);
 HTTPResponse* CreateHTTPResponse(int status_code,
 																 const char* headers,
 																 const char* body);
+
+/**
+ * @brief Parses a raw HTTP response into an HTTPResponse structure.
+ *
+ * This function tokenizes the HTTP response and extracts the status code,
+ *
+ * @param raw_response A string containing the raw HTTP response to parse.
+ * @return A pointer to an HTTPResponse structure containing the parsed data, or
+ * NULL on error.
+ */
+HTTPResponse* ParseHTTPResponse(const char* raw_response);
 
 /**
  * @brief Frees the memory associated with an HTTPResponse structure.
