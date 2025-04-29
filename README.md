@@ -41,6 +41,20 @@ After running the server, **note down the IP address displayed in the terminal**
 
 ---
 
+## Using the `client` to Send Requests
+
+To launch the client application, run:
+
+```bash
+./client
+```
+
+You will be guided through on-screen prompts to perform various requests. The client serves as a user-friendly wrapper for the core request types described below.
+
+If you prefer to send requests manually via the command line, refer to the section below.
+
+---
+
 ## GET Requests
 
 To make a `GET` request, use the following format:
@@ -70,12 +84,23 @@ curl http://<server_ip>:<port>?roll_num=23K-0760 -X DELETE
 
 ---
 
-## Summary
+##  Closing the Server and Client
 
-- **GET:** Retrieve information based on the roll number.
-- **POST:** Add information (roll number and name).
-- **DELETE:** Remove information by specifying the roll number.
+Signal handling has been implemented, ensuring that both the `client` and `server` programs will exit gracefully upon receiving SIGINT or SIGTERM signals.
 
-Ensure the server is running and accessible before making any requests.
+To terminate either program:
+
+- **Using Ctrl + C**: While the program is running, press `Ctrl + C` to send the `SIGINT` signal.
+- **Sending a signal via the kill command**: You can also send a signal using the `kill` command, specifying the process ID (PID) of the program. For example:
+```bash
+kill -SIGTERM <PID>  # Sends SIGTERM to the specified process
+```
+
+Where `<PID>` is the process ID of either the server or client. You can find the PID using the `ps` command:
+```bash
+ps aux | grep <program_name>
+```
+
+This ensures a clean shutdown of resources, including closing any open sockets or freeing allocated memory.
 
 ---

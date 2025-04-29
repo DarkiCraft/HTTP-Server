@@ -71,6 +71,32 @@ static int CheckServerReachability(const char* ip, int port) {
 	return -1;	// Not reachable
 }
 
+static int ValidateRollNumber(const char* roll) {
+	if (strlen(roll) != ROLL_NUM_LENGTH) {
+		return 0;
+	}
+
+	if (!isdigit(roll[0]) || !isdigit(roll[1])) {
+		return 0;
+	}
+
+	if (!isupper(roll[2])) {
+		return 0;
+	}
+
+	if (roll[3] != '-') {
+		return 0;
+	}
+
+	for (int i = 4; i < ROLL_NUM_LENGTH; ++i) {
+		if (!isdigit(roll[i])) {
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
 void InitClient() {
 	is_client_running = 1;
 
@@ -170,8 +196,14 @@ int InputFields(RequestType request) {
 			return -1;
 		}
 
+		if (!ValidateRollNumber(roll_num)) {
+			(void)printf(
+					"Error: Invalid roll number format. Expected format: YYA-DDDD\n\n");
+			return -1;
+		}
+
 	} else if (request == POST) {
-		(void)printf("Enter roll number: ");
+		(void)printf("Enter roll number (YYA-DDDD): ");
 		errno = 0;
 		if (scanf("%8s", roll_num) != 1) {
 			if (errno != EINTR) {
@@ -180,7 +212,13 @@ int InputFields(RequestType request) {
 			return -1;
 		}
 
-		(void)getchar();
+		if (!ValidateRollNumber(roll_num)) {
+			(void)printf(
+					"Error: Invalid roll number format. Expected format: YYA-DDDD\n\n");
+			return -1;
+		}
+
+		(void)getchar();	// Clear leftover newline
 		(void)printf("Enter name: ");
 		errno = 0;
 		if (fgets(name, MAX_NAME_LENGTH, stdin) == NULL) {
