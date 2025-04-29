@@ -31,7 +31,7 @@ sudo apt update >/dev/null 2>&1
 
 # === 2. Check for required commands and install missing ones === #
 REQUIRED_COMMANDS=("gcc" "make" "ar")
-REQUIRED_PACKAGES=("binutils" "libsqlite3-dev")
+REQUIRED_PACKAGES=("curl" "binutils" "libsqlite3-dev")
 
 # Check and install commands
 for CMD in "${REQUIRED_COMMANDS[@]}"; do

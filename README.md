@@ -10,7 +10,7 @@ Before compiling the project, ensure all the necessary dependencies are installe
 ./configure
 ```
 
-This script will check if the required commands (`gcc`, `make`, `ar`) and packages (`binutils`, `libsqlite3-dev`) are installed. If any dependencies are missing, the script will attempt to install them.
+This script will check if the required commands (`gcc`, `make`, `ar`) and packages (`curl`, `binutils`, `libsqlite3-dev`) are installed. If any dependencies are missing, the script will attempt to install them.
 
 It will also verify that you have the correct version of GCC installed (version 5 or higher).
 
