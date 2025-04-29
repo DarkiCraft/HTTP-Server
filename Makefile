@@ -1,19 +1,11 @@
 # === Variables === #
 CXX := gcc
 
-#CXXFLAGS := -std=gnu99 \
-#            -O3 -flto \
-#            -Iinclude \
-#						-D_GNU_SOURCE -DNDEBUG \
-#            -Wall -Wextra -Wpedantic
-
-CXXFLAGS := -std=gnu23 \
-            -Wall -Wextra -Wpedantic \
-            -O0 -g \
-            -fsanitize=address -fsanitize=undefined \
-            -fno-omit-frame-pointer \
-            -Iinclude \
-						-D_GNU_SOURCE
+CXXFLAGS := -std=gnu99 \
+						-O3 -flto \
+						-Iinclude \
+						-D_GNU_SOURCE -DNDEBUG \
+						-Wall -Wextra -Wpedantic
 
 LDFLAGS  := -pthread -lsqlite3
 

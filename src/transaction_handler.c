@@ -299,6 +299,11 @@ void HandleTransaction(int client_socket) {
 		(void)fprintf(stderr, "Error: In HandleTransaction(): read() failed\n");
 		return;
 	}
+	if (read_size == 0) {
+		// (void)fprintf(stderr,
+		// 							"Error: In HandleTransaction(): Client sent no data\n");
+		return;
+	}
 
 	buffer[read_size] = '\0';
 
