@@ -1,3 +1,6 @@
+# Aboutt
+
+Simple HTTP Server with a makeshift client. cURL requests are supported. This started out as a university project, and I intend on improving this further in the future if I ever get the time.
 
 # Usage Guide
 
