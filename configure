@@ -3,85 +3,114 @@
 # === Configure Script === #
 # Checks environment and installs dependencies for the build
 
-# Helper function to check if a command exists
+# Set error handling
+set -e
+
+# === Helper Functions === #
+
+# Print formatted message with color
+print_msg() {
+  local level=$1
+  local msg=$2
+  
+  case "$level" in
+    "INFO")  echo -e "\033[0;34m[INFO]\033[0m $msg" ;;
+    "OK")    echo -e "\033[0;32m[OK]\033[0m $msg" ;;
+    "WARN")  echo -e "\033[0;33m[WARN]\033[0m $msg" ;;
+    "ERROR") echo -e "\033[0;31m[ERROR]\033[0m $msg" ;;
+    *)       echo "$msg" ;;
+  esac
+}
+
+# Check if a command exists
 command_exists() {
   command -v "$1" >/dev/null 2>&1
+  return $?
 }
 
-# Helper function to install missing packages
-install_package() {
-  check_sudo
-  PACKAGE=$1
-  sudo apt install -y "$PACKAGE" >/dev/null 2>&1
-}
-
-# Helper function to check if user has sudo privileges
+# Check if user has sudo privileges
 check_sudo() {
   if ! command_exists sudo; then
-    echo "[ERROR] 'sudo' is required to install the required command/package. Please run the script again with sudo. Exiting..."
+    print_msg "ERROR" "'sudo' is required to install packages. Please run the script again with sudo. Exiting..."
     exit 1
   fi
 }
 
-echo "=== Starting configuration ==="
+# Install missing package
+install_package() {
+  check_sudo
+  local PACKAGE=$1
+  print_msg "INFO" "Installing $PACKAGE..."
+  sudo apt install -y "$PACKAGE" >/dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    print_msg "ERROR" "Failed to install $PACKAGE. Please check your internet connection and try again."
+    exit 1
+  fi
+}
 
-# === 1. Update package list === #
-echo "[INFO] Updating package list..."
+# === Main Script === #
+print_msg "INFO" "Starting configuration..."
+
+# 1. Update package list
+print_msg "INFO" "Updating package list..."
+if ! check_sudo; then exit 1; fi
 sudo apt update >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  print_msg "WARN" "Failed to update package list. Continuing anyway..."
+fi
 
-# === 2. Check for required commands and install missing ones === #
+# 2. Check for required commands and install if missing
 REQUIRED_COMMANDS=("gcc" "make" "ar")
-REQUIRED_PACKAGES=("curl" "binutils" "libsqlite3-dev")
-
-# Check and install commands
 for CMD in "${REQUIRED_COMMANDS[@]}"; do
   if command_exists "$CMD"; then
-    echo "[OK] Command '$CMD' found."
+    print_msg "OK" "Command '$CMD' found."
   else
-    echo "[WARN] Command '$CMD' missing. Installing..."
+    print_msg "WARN" "Command '$CMD' missing. Installing build-essential..."
     install_package "build-essential"
     
     # Recheck if the command is installed
     if command_exists "$CMD"; then
-      echo "[OK] Command '$CMD' found."
+      print_msg "OK" "Command '$CMD' found."
     else
-      echo "[ERROR] Command '$CMD' not found after installing 'build-essential'. Exiting..."
+      print_msg "ERROR" "Command '$CMD' not found after installing 'build-essential'. Exiting..."
       exit 1
     fi
   fi
 done
 
-# === 3. Install required packages === #
+# 3. Install required packages
+REQUIRED_PACKAGES=("curl" "binutils" "libsqlite3-dev")
 for PKG in "${REQUIRED_PACKAGES[@]}"; do
-  dpkg -s "$PKG" >/dev/null 2>&1
-  if [ $? -ne 0 ]; then
-    echo "[WARN] Package '$PKG' not found. Installing..."
+  if dpkg -s "$PKG" >/dev/null 2>&1; then
+    print_msg "OK" "Package '$PKG' found."
+  else
+    print_msg "WARN" "Package '$PKG' not found. Installing..."
     install_package "$PKG"
     
     # Recheck if the package is installed
-    dpkg -s "$PKG" >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-      echo "[OK] Package '$PKG' found."
+    if dpkg -s "$PKG" >/dev/null 2>&1; then
+      print_msg "OK" "Package '$PKG' found."
     else
-      echo "[ERROR] Package '$PKG' not found after installation. Exiting..."
+      print_msg "ERROR" "Package '$PKG' not found after installation. Exiting..."
       exit 1
     fi
-  else
-    echo "[OK] Package '$PKG' found."
   fi
 done
 
-# === 4. Check GCC version === #
+# 4. Check GCC version
 GCC_VERSION=$(gcc -dumpfullversion | cut -d. -f1)
 MIN_GCC_VERSION=5
 
 # Check for a valid GCC version
-if [[ ! "$GCC_VERSION" =~ ^[0-9]+$ ]] || [ "$GCC_VERSION" -lt "$MIN_GCC_VERSION" ]; then
-  echo "[ERROR] gcc $GCC_VERSION detected. gcc >= $MIN_GCC_VERSION is required. Please upgrade manually. Exiting..."
+if [[ ! "$GCC_VERSION" =~ ^[0-9]+$ ]]; then
+  print_msg "ERROR" "Unable to determine gcc version. Exiting..."
+  exit 1
+elif [ "$GCC_VERSION" -lt "$MIN_GCC_VERSION" ]; then
+  print_msg "ERROR" "gcc $GCC_VERSION detected. gcc >= $MIN_GCC_VERSION is required. Please upgrade manually. Exiting..."
   exit 1
 else
-  echo "[OK] gcc $GCC_VERSION is sufficient."
+  print_msg "OK" "gcc $GCC_VERSION is sufficient."
 fi
 
-# === 5. Final message === #
-echo "=== Configuration successful ==="
+# 5. Final message
+print_msg "INFO" "Configuration completed successfully!"
