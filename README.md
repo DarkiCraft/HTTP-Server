@@ -2,6 +2,8 @@
 
 Simple HTTP Server with a makeshift client. cURL requests are supported. This started out as a university project, and I intend on improving this further in the future if I ever get the time.
 
+This was written in Ubuntu and I don't have experience with other Linux distros to know how they work, and thus, the given configure script may or may not work on your system if it's a different Distro.
+
 # Usage Guide
 
 ## Pre-Compilation Setup
