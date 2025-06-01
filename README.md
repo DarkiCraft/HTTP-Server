@@ -8,6 +8,8 @@ This was written in Ubuntu and I don't have experience with other Linux distros 
 
 ## Pre-Compilation Setup
 
+ **NOTE: I HAVE BEEN TOLD THAT THE CONFIGURE SCRIPT IS NOT WORKING. IF THAT'S THE CASE, PLEASE MANUALLY INSTALL THE MENTIONED PACKAGES FOR YOUR SYSTEM**
+
 Before compiling the project, ensure all the necessary dependencies are installed. To do this, you need to run the `configure` script.
 
 **Run the configure script**:
