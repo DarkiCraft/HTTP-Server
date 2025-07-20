@@ -111,3 +111,13 @@ ps aux | grep <program_name>
 This ensures a clean shutdown of resources, including closing any open sockets or freeing allocated memory.
 
 ---
+
+## Anknowledgements
+
+Massive thanks to my friend [Ali-Yehya](https://github.com/Ali-Yehya) for helping with this project!
+
+---
+
+## License
+
+This project is released under the [MIT License](LICENSE).
